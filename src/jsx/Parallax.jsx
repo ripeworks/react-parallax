@@ -22,6 +22,7 @@ export default class Parallax extends React.Component {
 		bgStyle: PropTypes.object,
 		bgWidth: PropTypes.string,
 		blur: PropTypes.oneOfType([PropTypes.number, PropTypes.object]),
+    bgPosition: PropTypes.func,
 		className: PropTypes.string,
 		parent: PropTypes.any,
 		strength: PropTypes.number,
@@ -253,8 +254,7 @@ export default class Parallax extends React.Component {
 			return;
 		}
 
-		const inverse = strength < 0;
-		const pos = (inverse ? strength : 0) - (strength * percentage);
+    const pos = this.backgroundPosition(percentage);
 
 		this.img.style.WebkitTransform = 'translate3d(-50%, ' + pos + 'px, 0)';
 		this.img.style.transform = 'translate3d(-50%, ' + pos + 'px, 0)';
@@ -276,12 +276,20 @@ export default class Parallax extends React.Component {
 			return;
 		}
 
-		const inverse = strength < 0;
-		const pos = (inverse ? strength : 0) - (strength * percentage);
+    const pos = this.backgroundPosition(percentage);
 
 		this.bg.style.WebkitTransform = 'translate3d(-50%, ' + pos + 'px, 0)';
 		this.bg.style.transform = 'translate3d(-50%, ' + pos + 'px, 0)';
 	}
+
+  backgroundPosition(percentage) {
+    const {bgPosition, strength} = this.props;
+
+    if (typeof bgPosition === 'function') return bgPosition(percentage, this.props);
+
+    const inverse = strength < 0;
+    return (inverse ? strength : 0) - (strength * percentage);
+  }
 
 	/**
 	 * defines all static values for the background image
